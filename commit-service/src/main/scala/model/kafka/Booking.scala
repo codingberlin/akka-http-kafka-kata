@@ -6,6 +6,7 @@ import model.api.{Flightnumber, Person, Price, UserId}
 
 case class Booking(
     bookingId: UUID,
+    successful: Successful,
     userId: UserId,
     persons: Seq[Person],
     price: Price,

@@ -1,7 +1,7 @@
 package service
 
 import model.api._
-import model.kafka.Booking
+import model.kafka.{Booking, Successful}
 import play.api.libs.json.{Json, Writes}
 
 object Protocol {
@@ -12,6 +12,7 @@ object Protocol {
   implicit val priceWrites = AnyValWrites(Price.unapply)
   implicit val userIdWrites = AnyValWrites(UserId.unapply)
   implicit val flightnumberWrites = AnyValWrites(Flightnumber.unapply)
+  implicit val successfullWrites = AnyValWrites(Successful.unapply)
   implicit val bookingWrites = Json.writes[Booking]
 }
 
