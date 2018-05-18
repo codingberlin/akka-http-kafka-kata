@@ -9,5 +9,6 @@ lazy val root = (project in file(".")).
     )),
     name := "commit-service",
     scalafmtOnCompile := true,
+    libraryDependencies += "com.typesafe.play" %% "play-json" % "2.6.7",
     libraryDependencies += scalaTest % Test
   )
