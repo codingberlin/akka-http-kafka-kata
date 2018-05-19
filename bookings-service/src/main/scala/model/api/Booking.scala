@@ -1,6 +1,9 @@
 package model.api
 
-case class Booking(userId: UserId,
-                   personsCount: NumberOfPersons,
+import java.util.UUID
+
+case class Booking(bookingId: UUID,
+                   userId: UserId,
+                   numberOfPersons: NumberOfPersons,
                    flightnumber: Flightnumber,
 )

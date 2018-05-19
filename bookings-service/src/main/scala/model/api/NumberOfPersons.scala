@@ -1,3 +1,3 @@
 package model.api
 
-class NumberOfPersons(numberOfPersons: Int)
+case class NumberOfPersons(numberOfPersons: Int) extends AnyVal
