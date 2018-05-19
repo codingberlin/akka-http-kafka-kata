@@ -14,8 +14,10 @@ lazy val root = (project in file(".")).
     scalafmtOnCompile := true,
     libraryDependencies += "com.typesafe.play" %% "play-json" % "2.6.7",
     libraryDependencies += "com.typesafe.akka" %% "akka-stream-kafka" % "0.20",
+    libraryDependencies += "com.typesafe.akka" %% "akka-http" % "10.1.1",
     libraryDependencies += scalaTest % Test,
     libraryDependencies += "org.mockito" % "mockito-core" % "2.18.3" % Test,
+    libraryDependencies += "com.typesafe.akka" %% "akka-http-testkit" % "10.1.1" % Test,
     Test / testOptions += Tests.Setup { () =>
       println("clean and start docker-compose")
       scala.sys.process.stringToProcess("docker-compose rm -f").!

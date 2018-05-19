@@ -30,11 +30,20 @@ object Protocol {
   implicit val priceReads = AnyValReads(Price)
   implicit val bookingReads = Json.reads[Booking]
 
+  implicit val pathWrites = AnyValWrites(Path.unapply)
+  implicit val validationErrorWrites = AnyValWrites(ValidationError.unapply)
+  implicit val validationErrorsWrites = Json.writes[ValidationErrors]
+
 }
 
 case class AnyValReads[I, T](box: I => T)(implicit reads: Reads[I])
     extends Reads[T] {
   def reads(js: JsValue) = js.validate[I] map box
+}
+
+case class AnyValWrites[I, T](unbox: T => I)(implicit writes: Writes[I])
+    extends Writes[T] {
+  def writes(value: T) = Json.toJson(unbox(value))
 }
 
 case class NonEmptyStringAnyValReads[String, T](box: String => T)(

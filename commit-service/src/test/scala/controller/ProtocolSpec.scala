@@ -67,6 +67,15 @@ class ProtocolSpec extends FlatSpec with Matchers {
       ))
   }
 
+  it should "write ValidationErrors" in {
+    val result = Json
+      .toJson(
+        ValidationErrors(Path("somePath"), Seq(ValidationError("someError"))))
+      .toString
+
+    result shouldEqual """{"path":"somePath","errors":["someError"]}"""
+  }
+
   def parseAnyVal[T: Reads, I](givenJson: String, expectedValue: I)(
       box: I => T): Unit = {
     Json.parse(givenJson).validate[T] match {
