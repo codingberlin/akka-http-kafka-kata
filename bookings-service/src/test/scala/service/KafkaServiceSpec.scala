@@ -24,7 +24,6 @@ import persistence.BookingsRepository
 import org.mockito.Mockito._
 import org.mockito.ArgumentMatchers._
 import org.scalatest.concurrent.Eventually
-import org.scalatest.time.Span
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
