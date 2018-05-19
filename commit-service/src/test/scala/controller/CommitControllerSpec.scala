@@ -67,6 +67,21 @@ class CommitControllerSpec
     verify(commitService, times(0)).commit(any())
   }
 
+  it should "response with BadRequest when empty body is given" in {
+    val (commitController, commitService) = commitControllerAndMocks
+    when(commitService.commit(any()))
+      .thenReturn(Future.successful(Successful(false)))
+
+    Post("/commit", "") ~> commitController.route ~> check {
+      status shouldEqual StatusCodes.BadRequest
+      println(entityAs[String])
+      println("""[{"path":"/","errors":["payload must not be empty"]}]""")
+      entityAs[String] shouldEqual """[{"path":"/","errors":["payload must not be empty"]}]"""
+    }
+
+    verify(commitService, times(0)).commit(any())
+  }
+
   private def commitControllerAndMocks = {
     val commitService = mock[CommitService]
     val commitController = new CommitController(commitService)

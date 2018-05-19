@@ -23,19 +23,29 @@ class CommitController(commitService: CommitService)(
     actorSystem: ActorSystem,
     materializer: Materializer) {
 
+  val emptyPayloadErrorMessage: String = Json
+    .toJson(
+      Seq(ValidationErrors(Path("/"),
+                           Seq(ValidationError("payload must not be empty")))))
+    .toString
+
   val route: Route =
     post {
       path("commit") {
         entity(as[String]) { body =>
-          val commitResult = Json.parse(body).validate[Booking] match {
-            case JsSuccess(booking, _) =>
-              commitBooking(booking)
-            case JsError(errors) =>
-              sendValidationErrors(errors)
-          }
+          if (body.isEmpty) {
+            complete(StatusCodes.BadRequest, emptyPayloadErrorMessage)
+          } else {
+            val commitResult = Json.parse(body).validate[Booking] match {
+              case JsSuccess(booking, _) =>
+                commitBooking(booking)
+              case JsError(errors) =>
+                sendValidationErrors(errors)
+            }
 
-          onComplete(commitResult) { route: Try[StandardRoute] =>
-            route.getOrElse(complete(StatusCodes.InternalServerError))
+            onComplete(commitResult) { route: Try[StandardRoute] =>
+              route.getOrElse(complete(StatusCodes.InternalServerError))
+            }
           }
         }
       }
