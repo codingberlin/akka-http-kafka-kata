@@ -24,7 +24,7 @@ class KafkaServiceSpec
     with BeforeAndAfterAll
     with KafkaProducerAndConsumer {
 
-  val topicName = TopicName("KafkaServiceSpecTopic")
+  val topicName = TopicName(s"KafkaServiceSpecTopic-${UUID.randomUUID}")
 
   val anyLastname = Lastname(UUID.randomUUID().toString)
   val anyOtherLastname = Lastname(UUID.randomUUID().toString)

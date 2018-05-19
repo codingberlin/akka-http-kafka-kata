@@ -39,7 +39,7 @@ class KafkaServiceSpec
   implicit override val patienceConfig =
     PatienceConfig(timeout = scaled(5.seconds), interval = scaled(1.seconds))
 
-  val topicName = TopicName("KafkaServiceSpecTopic")
+  val topicName = TopicName(s"KafkaServiceSpecTopic-${UUID.randomUUID}")
 
   val anySuccessfulBooking = KafkaBooking(
     UUID.randomUUID(),

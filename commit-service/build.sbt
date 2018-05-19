@@ -19,8 +19,7 @@ lazy val root = (project in file(".")).
     libraryDependencies += "org.mockito" % "mockito-core" % "2.18.3" % Test,
     libraryDependencies += "com.typesafe.akka" %% "akka-http-testkit" % "10.1.1" % Test,
     Test / testOptions += Tests.Setup { () =>
-      println("clean and start docker-compose")
-      scala.sys.process.stringToProcess("docker-compose rm -f").!
+      println("start docker-compose")
       scala.sys.process.stringToProcess("docker-compose up -d").!
     },
     Test / testOptions += Tests.Cleanup { () =>
