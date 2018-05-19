@@ -74,8 +74,6 @@ class CommitControllerSpec
 
     Post("/commit", "") ~> commitController.route ~> check {
       status shouldEqual StatusCodes.BadRequest
-      println(entityAs[String])
-      println("""[{"path":"/","errors":["payload must not be empty"]}]""")
       entityAs[String] shouldEqual """[{"path":"/","errors":["payload must not be empty"]}]"""
     }
 
