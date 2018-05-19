@@ -20,7 +20,7 @@ object CommitMicroService extends App {
 
   // in real microservice this should come out of a configuration
   val kafkaServer = "localhost:9092"
-  val kafkaTopicName = TopicName("bookingsMicroService")
+  val kafkaTopicName = TopicName("commitMicroService")
   val interface = "localhost"
   val port = 9001
 
