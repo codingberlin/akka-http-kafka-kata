@@ -1,5 +1,8 @@
 import Dependencies._
 
+import sbt.Keys._
+import sbt._
+
 lazy val root = (project in file(".")).
   settings(
     inThisBuild(List(
@@ -10,5 +13,15 @@ lazy val root = (project in file(".")).
     name := "commit-service",
     scalafmtOnCompile := true,
     libraryDependencies += "com.typesafe.play" %% "play-json" % "2.6.7",
-    libraryDependencies += scalaTest % Test
+    libraryDependencies += "com.typesafe.akka" %% "akka-stream-kafka" % "0.20",
+    libraryDependencies += scalaTest % Test,
+    Test / testOptions += Tests.Setup { () =>
+      println("clean and start docker-compose")
+      scala.sys.process.stringToProcess("docker-compose rm -f").!
+      scala.sys.process.stringToProcess("docker-compose up -d").!
+    },
+    Test / testOptions += Tests.Cleanup { () =>
+      println("stopping docker-compose")
+      scala.sys.process.stringToProcess("docker-compose stop").!
+    }
   )
