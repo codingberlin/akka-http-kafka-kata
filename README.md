@@ -43,10 +43,10 @@ curl -XPOST http://localhost:9000/commit -v -d"{}"
 curl -XPOST http://localhost:9000/commit -v -d'{ "userId": "123abc", "persons": [{ "firstname": "Alice", "lastname": "Mustermann", "seat": "A5" },{ "firstname": "Bob", "lastname": "Mustermann", "seat": "A6" }, { "firstname": "Charly", "lastname": "Mustermann", "seat": "A7" }], "price": 69.99, "flightnumber": "EZY8124", "provider": "easyjet"}' 
 
 # OK for stored bookings
-curl -XPOST http://localhost:9001/bookings?userid=123abc -v
+curl http://localhost:9001/bookings?userid=123abc -v
 
 # OK for with empty set for unknown userid
-curl -XPOST http://localhost:9001/bookings?userid=unknown -v
+curl http://localhost:9001/bookings?userid=unknown -v
 ```
 
 ## Test
