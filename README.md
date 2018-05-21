@@ -92,6 +92,7 @@ When the commit service processed a booking commit it produces kafka messages to
 * The case classes of the commit-service API, kafka messages and bookings-service API each differ by intention to show that each part has its own micro-domain-model. The commit-service API needs a `privider` attribute to know which 3rd party API must be used, but Kafka and bookings-service don't need to care about that. Kafka needs to know about a `successful` flag to distiguish between successes and faiures but the bookings-service just stores successful bookings thus the flag is not necessary.
 * In this Kata the DRY principle is violated regarding the case classes of the Kafka messages. In my optionion it is a case by case decision if the case classes should be packaged in a lib or not. If extract it you get DRY on the one hand but create compile-time coupling on the other hand.
 * I used play json to de/serialise JSON because I knew it but while implementing the kata I realized I would use `spray-json` within the next service because it integrates better with `akka-http`
+* the three `docker-compose.yml` files are currently identical but when commit-service and bookings-service would get more dependencies they would differ. `./docker-compose.yml` starts all dependencies, `./commit-service/docker-compose.yml` starts the dependencies of `commit-service` only and `./bookings-service/docker-compose.yml` from `bookings-service`
 
 ## Outlook
 * introduce configuration instead of hard coded topic names, ports, ...
