@@ -9,6 +9,8 @@ import model.kafka.Successful
 import service.CommitService
 import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
+import play.api.libs.json.Json
+import Protocol._
 
 import scala.concurrent.Future
 
@@ -23,7 +25,7 @@ class CommitControllerSpec
     when(commitService.commit(any()))
       .thenReturn(Future.successful(Successful(true)))
 
-    Post("/commit", anyBokkingJson) ~> commitController.route ~> check {
+    Post("/commit", Json.toJson(anyBooking).toString) ~> commitController.route ~> check {
       status shouldEqual StatusCodes.NoContent
     }
 
@@ -35,7 +37,7 @@ class CommitControllerSpec
     when(commitService.commit(any()))
       .thenReturn(Future.successful(Successful(false)))
 
-    Post("/commit", anyBokkingJson) ~> commitController.route ~> check {
+    Post("/commit", Json.toJson(anyBooking).toString) ~> commitController.route ~> check {
       status shouldEqual StatusCodes.InternalServerError
     }
 
@@ -47,7 +49,7 @@ class CommitControllerSpec
     when(commitService.commit(any()))
       .thenReturn(Future.successful(Successful(false)))
 
-    Post("/commit", anyBokkingJson) ~> commitController.route ~> check {
+    Post("/commit", Json.toJson(anyBooking).toString) ~> commitController.route ~> check {
       status shouldEqual StatusCodes.InternalServerError
     }
 
@@ -61,7 +63,20 @@ class CommitControllerSpec
 
     Post("/commit", "{}") ~> commitController.route ~> check {
       status shouldEqual StatusCodes.BadRequest
-      entityAs[String] shouldEqual """[{"path":"/flightnumber","errors":["error.path.missing"]},{"path":"/userId","errors":["error.path.missing"]},{"path":"/provider","errors":["error.path.missing"]},{"path":"/persons","errors":["error.path.missing"]},{"path":"/price","errors":["error.path.missing"]}]"""
+      entityAs[String] shouldEqual Json
+        .toJson(Seq(
+          ValidationErrors(Path("/flightnumber"),
+                           Seq(ValidationError("error.path.missing"))),
+          ValidationErrors(Path("/userId"),
+                           Seq(ValidationError("error.path.missing"))),
+          ValidationErrors(Path("/provider"),
+                           Seq(ValidationError("error.path.missing"))),
+          ValidationErrors(Path("/persons"),
+                           Seq(ValidationError("error.path.missing"))),
+          ValidationErrors(Path("/price"),
+                           Seq(ValidationError("error.path.missing")))
+        ))
+        .toString
     }
 
     verify(commitService, times(0)).commit(any())
@@ -74,7 +89,13 @@ class CommitControllerSpec
 
     Post("/commit", "") ~> commitController.route ~> check {
       status shouldEqual StatusCodes.BadRequest
-      entityAs[String] shouldEqual """[{"path":"/","errors":["payload must not be empty"]}]"""
+      entityAs[String] shouldEqual Json
+        .toJson(
+          Seq(
+            ValidationErrors(Path("/"),
+                             Seq(ValidationError("payload must not be empty")))
+          ))
+        .toString
     }
 
     verify(commitService, times(0)).commit(any())
@@ -99,16 +120,4 @@ class CommitControllerSpec
     Flightnumber("EZY8124"),
     Provider("easyjet")
   )
-
-  val anyBokkingJson = """{
-                      |"userId": "123abc",
-                      |"persons": [{
-                      |  "firstname": "Max",
-                      |  "lastname": "Mustermann",
-                      |  "seat": "A5"
-                      |}],
-                      |"price": 69.99,
-                      |"flightnumber": "EZY8124",
-                      |"provider": "easyjet"
-                      |}""".stripMargin
 }

@@ -4,9 +4,11 @@ import model.api._
 import play.api.libs.json._
 
 object Protocol {
-  implicit val lastnameReads = NonEmptyStringAnyValReads(Lastname)
-  implicit val firstnameReads = NonEmptyStringAnyValReads(Firstname)
-  implicit val seatReads = new Reads[Seat] {
+  implicit val lastnameReads =
+    NonEmptyStringAnyValFormat(Lastname)(Lastname.unapply)
+  implicit val firstnameReads =
+    NonEmptyStringAnyValFormat(Firstname)(Firstname.unapply)
+  implicit val seatReads = new Format[Seat] {
     def reads(js: JsValue) =
       js.validate[String]
         .flatMap {
@@ -21,43 +23,21 @@ object Protocol {
 
         }
         .map(Seat)
+    def writes(seat: Seat) = Json.toJson(seat.seat)
   }
-  implicit val personReads = Json.reads[Person]
+  implicit val personReads = Json.format[Person]
 
-  implicit val userIdReads = NonEmptyStringAnyValReads(UserId)
-  implicit val flightnumberReads = NonEmptyStringAnyValReads(Flightnumber)
-  implicit val providerReads = NonEmptyStringAnyValReads(Provider)
-  implicit val priceReads = AnyValReads(Price)
-  implicit val bookingReads = Json.reads[Booking]
+  implicit val userIdReads = NonEmptyStringAnyValFormat(UserId)(UserId.unapply)
+  implicit val flightnumberReads =
+    NonEmptyStringAnyValFormat(Flightnumber)(Flightnumber.unapply)
+  implicit val providerReads =
+    NonEmptyStringAnyValFormat(Provider)(Provider.unapply)
+  implicit val priceReads = AnyValFormat(Price)(Price.unapply)
+  implicit val bookingReads = Json.format[Booking]
 
-  implicit val pathWrites = AnyValWrites(Path.unapply)
-  implicit val validationErrorWrites = AnyValWrites(ValidationError.unapply)
-  implicit val validationErrorsWrites = Json.writes[ValidationErrors]
+  implicit val pathWrites = AnyValFormat(Path)(Path.unapply)
+  implicit val validationErrorWrites =
+    AnyValFormat(ValidationError)(ValidationError.unapply)
+  implicit val validationErrorsWrites = Json.format[ValidationErrors]
 
-}
-
-case class AnyValReads[I, T](box: I => T)(implicit reads: Reads[I])
-    extends Reads[T] {
-  def reads(js: JsValue) = js.validate[I] map box
-}
-
-case class AnyValWrites[I, T](unbox: T => I)(implicit writes: Writes[I])
-    extends Writes[T] {
-  def writes(value: T) = Json.toJson(unbox(value))
-}
-
-case class NonEmptyStringAnyValReads[String, T](box: String => T)(
-    implicit reads: Reads[String])
-    extends Reads[T] {
-  def nonEmpty(value: String): JsResult[String] = value match {
-    case "" =>
-      JsError("must not be empty")
-    case success =>
-      JsSuccess(success)
-  }
-
-  def reads(js: JsValue) =
-    js.validate[String]
-      .flatMap(nonEmpty)
-      .map(box)
 }
